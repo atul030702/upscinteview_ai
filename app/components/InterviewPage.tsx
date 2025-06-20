@@ -3,10 +3,12 @@ import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 
 import getMediaPermission from "../lib/utils/getMediaAccess";
+import toggleMediaAndState from "../lib/utils/toggleMediaAndState";
 
 const InterviewPage = () => {
     const [isMicOn, setIsMicOn] = useState<boolean>(true);
     const [isVideoOn, setIsVideoOn] = useState<boolean>(true);
+    const [isSpeaking, setIsSpeaking] = useState<boolean>(false); //Tracking user mic for audio
     const mediaStreamRef = useRef<MediaStream | null>(null); //For toggling video/mic on/off on button click
     const videoElementRef = useRef<HTMLVideoElement | null>(null);//For showing live video feed in the element
 
@@ -27,28 +29,9 @@ const InterviewPage = () => {
         setupMediaStream();
     }, []);
 
-    const toggleMic = (): void => {
-        //For switch on/off the mic
-        const stream = mediaStreamRef.current;
-        if(stream) {
-            stream.getAudioTracks().forEach(track => {
-                track.enabled = !isMicOn;
-            });
-        }
-        //For changing the image and background-color
-        setIsMicOn(!isMicOn); 
-    };
-    const toggleVideo = (): void => {
-        //For switching on/off the camera
-        const stream = mediaStreamRef.current;
-        if(stream) {
-            stream.getVideoTracks().forEach(track => {
-                track.enabled = !isVideoOn;
-            });
-        }
-        //For changing the camera icon and background-color
-        setIsVideoOn(!isVideoOn);
-    };
+    const toggleMic = () => toggleMediaAndState("audio", mediaStreamRef, isMicOn, setIsMicOn);
+    const toggleVideo = () => toggleMediaAndState("video", mediaStreamRef, isVideoOn, setIsVideoOn);
+
 
     return (
         <div className="w-full h-screen flex justify-center items-center p-10">
