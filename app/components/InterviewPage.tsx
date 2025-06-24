@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 
 import getMediaPermission from "../lib/utils/getMediaAccess";
 import toggleMediaAndState from "../lib/utils/toggleMediaAndState";
+import detectSpeaking from "../lib/utils/detectSpeaking";
 
 const InterviewPage = () => {
     const [isMicOn, setIsMicOn] = useState<boolean>(true);
@@ -23,6 +24,8 @@ const InterviewPage = () => {
                     videoElementRef.current.srcObject = stream;
                     videoElementRef.current.play();
                 }
+
+                detectSpeaking(stream, setIsSpeaking);
             }
         };
 
@@ -44,7 +47,7 @@ const InterviewPage = () => {
 
                 <div className="w-full flex justify-between items-center">
                     {/**User Video display div */}
-                    <div className="w-1/6 aspect-video rounded-sm">
+                    <div className="relative w-1/6 aspect-video rounded-sm">
                         <video 
                             ref={videoElementRef}
                             id="user-video"
@@ -54,6 +57,10 @@ const InterviewPage = () => {
                             playsInline
                         >
                         </video>
+                        {/** Speaking animation */}
+                        {isMicOn && isSpeaking && (
+                            <div className="absolute top-0 right-0 inset-0 bg-green-500 bg-opacity-40 rounded-sm animate-pulse border-2 border-green-400 pointer-events-none z-10"></div>
+                        )}
                     </div>
 
                     <div className="w-1/6 h-full flex flex-col justify-end whitespace-nowrap">
